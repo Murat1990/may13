@@ -101,7 +101,7 @@ py==1.10.0
 pycodestyle==2.5.0
 pydantic==1.9.0
 pyflakes==2.1.1
-Pygments==2.6.1
+Pygments==2.7.4
 pynisher==0.5.0
 pyparsing==2.4.7
 pyroscope-io==0.3.2
