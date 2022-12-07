@@ -1,6 +1,10 @@
 name: Leaked Secrets Scan
 
-on: [pull_request]
+on: 
+  push:
+    branches:    
+      - '**'        # matches every branch
+
 
 jobs:
   TruffleHog:
