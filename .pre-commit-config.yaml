@@ -1,5 +1,5 @@
 repos:
-- repo: local
+- repo: https://github.com/trufflesecurity/trufflehog
   hooks:
     - id: trufflehog
       name: TruffleHog
