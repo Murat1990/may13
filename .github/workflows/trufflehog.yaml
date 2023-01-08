@@ -1,9 +1,10 @@
-name: Trufflehog leaked secrets scan
+name: Leaked Secrets Scan
 
 on:
   workflow_dispatch:
   schedule: ## schedule the job to run at 12 am daily
      - cron: '0 0 * * *'
+
 
 jobs:
   TruffleHog:
@@ -19,4 +20,4 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-        
+        continue-on-error: false
