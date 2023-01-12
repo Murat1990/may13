@@ -15,8 +15,8 @@ jobs:
           fetch-depth: 0
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+       # with:
+  #        path: ./
+  #        base: ${{ github.event.repository.default_branch }}
+  #        head: HEAD
         continue-on-error: false
