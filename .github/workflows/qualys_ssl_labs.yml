@@ -11,4 +11,4 @@ jobs:
     steps:
     - name: Scan website
       run: |
-        curl -s https://api.ssllabs.com/api/v3/analyze?host=$(echo prepod.fiddler.ai) | jq .
+        curl -s https://api.ssllabs.com/api/v3/analyze?host=$(echo https://prepod.fiddler.ai) | jq .
