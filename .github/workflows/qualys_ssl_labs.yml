@@ -1,4 +1,4 @@
-name: ualys SSL Labs Scan
+name: Qualys SSL Labs Scan
 
 on:
   workflow_dispatch:
