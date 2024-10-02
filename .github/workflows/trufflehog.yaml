@@ -1,4 +1,4 @@
-name: Leaked Secrets Scan
+name: trufflehog
 
 on:
   workflow_dispatch:
