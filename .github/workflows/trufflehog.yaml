@@ -1,0 +1,21 @@
+name: trufflehog
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ master]  
+
+jobs:
+  TruffleHog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: .
+          exclude: "OMNIBUS_BUILDKITE_PLUGIN_VERSION:\\s+[a-f0-9]{40}"
+        continue-on-error: false
