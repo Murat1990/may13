@@ -17,5 +17,5 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: .
-          exclude-patterns: "OMNIBUS_BUILDKITE_PLUGIN_VERSION:\\s+[a-f0-9]{40}"
+          exclude: "OMNIBUS_BUILDKITE_PLUGIN_VERSION:\\s+[a-f0-9]{40}"
         continue-on-error: false
