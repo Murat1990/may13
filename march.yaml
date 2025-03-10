@@ -2,4 +2,4 @@
       canary: true
       definition: .expeditor/build-base-images.pipeline.yml
       env:
-        - OMNIBUS_BUILDKITE_PLUGIN_VERSION: e5637ca1ed34a227eba86ae30761010f308b2d1b # trufflehog:ignore
+        - OMNIBUS_BUILDKITE_PLUGIN_VERSION: e5637ca1ed34a227eba86ae30761010f308b2d1b # pragma: allowlist secret
