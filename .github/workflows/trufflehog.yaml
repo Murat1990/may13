@@ -16,5 +16,5 @@ jobs:
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
         with:
-          path: .
+          path: ./
         continue-on-error: false
