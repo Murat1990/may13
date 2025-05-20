@@ -3,18 +3,15 @@ name: trufflehog
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ master]  
+    branches: 
+      - master
 
 jobs:
   TruffleHog:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
         with:
-          path: ./
+          scan: pr
         continue-on-error: false
