@@ -112,7 +112,7 @@ retry==0.9.2
 scikit-learn==1.1.1
 sentry-sdk[celery]==1.8.0
 sentry-sdk[flask]==1.8.0
-setuptools==59.1.1
+setuptools==65.5.1
 simplejson==3.17.0
 six==1.15.0
 smmap==3.0.2
