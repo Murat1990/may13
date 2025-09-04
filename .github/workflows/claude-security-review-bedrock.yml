@@ -1,9 +1,9 @@
 name: Claude Security Review (Bedrock)
 
 permissions:
+  id-token: write
   contents: write
   pull-requests: write
-  id-token: write   # OIDC to AWS
 
 on:
   pull_request:
@@ -17,18 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC → assume role)
+      - name: Configure AWS (OIDC → assume role)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}   # arn:aws:iam::225285538696:role/HonorarySRE
+          role-to-assume: arn:aws:iam::225285538696:role/bedrock-invoke-claude   # your role ARN
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Claude Code security review (via Bedrock)
+      - name: Claude Code security review
         uses: anthropics/claude-code-action@v1
         with:
           use_bedrock: "true"
           prompt: "/security-review"
-          # choose ONE of the models you listed:
           claude_args: "--model anthropic.claude-sonnet-4-20250514-v1:0 --max-turns 6"
-          # or:
-          # claude_args: "--model anthropic.claude-3-7-sonnet-20250219-v1:0 --max-turns 6"
+          github_token: ${{ github.token }}
