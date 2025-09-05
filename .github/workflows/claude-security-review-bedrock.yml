@@ -29,7 +29,7 @@ jobs:
       - name: Configure AWS (OIDC → assume role)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::225285538696:role/bedrock-claude1   # <- new role
+          role-to-assume: arn:aws:iam::225285538696:role/bedrock-claude3   # <- new role
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Claude Code security review
