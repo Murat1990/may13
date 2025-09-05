@@ -14,11 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-1
+
     steps:
+      # Fetch full history OR keep shallow + fetch the SHAs below
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0   # <-- avoids merge-base issues
+
+      # Prove there is a diff to scan (won't fail the job)
+      - name: Show changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -e
+          git fetch --no-tags --prune origin "$BASE_SHA" "$HEAD_SHA"
+          echo "Base: $BASE_SHA"
+          echo "Head: $HEAD_SHA"
+          git --no-pager diff --name-status "$BASE_SHA" "$HEAD_SHA" || true
 
       - name: Configure AWS (OIDC → assume role)
         uses: aws-actions/configure-aws-credentials@v4
@@ -26,19 +40,12 @@ jobs:
           role-to-assume: arn:aws:iam::225285538696:role/bedrock-claude3
           aws-region: ${{ env.AWS_REGION }}
 
-      # prove there's a diff to scan (optional but helpful)
-      - name: Show changed files
-        run: |
-          git fetch --no-tags --prune --depth=2 origin +refs/heads/*:refs/remotes/origin/*
-          BASE=$(git merge-base HEAD origin/${{ github.base_ref }})
-          git --no-pager diff --name-status $BASE...HEAD
-
       - name: Claude Code security review
         uses: anthropics/claude-code-action@v1
         env:
-          CLAUDE_CODE_USE_BEDROCK: "1"          # <— Bedrock mode
+          CLAUDE_CODE_USE_BEDROCK: "1"
         with:
-          prompt: "/security-review"            # <— built-in command
+          prompt: "/security-review"
           model: anthropic.claude-sonnet-4-20250514-v1:0
           max_turns: 6
           github_token: ${{ github.token }}
