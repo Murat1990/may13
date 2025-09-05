@@ -17,10 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+
+      - name: Show OIDC claims (debug)
+        if: ${{ always() }}
+        run: |
+          TOK=$(curl -sSL "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" \
+            -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" | jq -r .value)
+          echo "$TOK" | awk -F. '{print $2}' | base64 -d 2>/dev/null | jq '{sub, aud, repository, repository_owner, ref, event_name}'
+
+
       - name: Configure AWS (OIDC → assume role)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::225285538696:role/bedrock-claude2   # <- new role
+          role-to-assume: arn:aws:iam::225285538696:role/bedrock-claude1   # <- new role
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Claude Code security review
