@@ -1,0 +1,50 @@
+name: Claude Security Review (Bedrock)
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0            # ensure both base & head exist locally
+
+      # prove there's actually a diff (should list your changed files)
+      - name: Show changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "Base: $BASE_SHA"
+          echo "Head: $HEAD_SHA"
+          git --no-pager diff --name-status "$BASE_SHA" "$HEAD_SHA" || true
+
+      - name: Configure AWS (OIDC → assume role)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::225285538696:role/bedrock-claude3
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Claude Code security review
+        uses: anthropics/claude-code-action@v1
+        env:
+          CLAUDE_CODE_USE_BEDROCK: "1"
+        with:
+          use_bedrock: "true"
+          prompt: "/security-review"
+          base_branch: ${{ github.base_ref }}   # <-- important for diff calc
+          # pack model/turns via settings or claude_args (both supported):
+          settings: |
+            { "provider": "bedrock", "model": "anthropic.claude-sonnet-4-20250514-v1:0", "max_turns": 6 }
+          github_token: ${{ github.token }}

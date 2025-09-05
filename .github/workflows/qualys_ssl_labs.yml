@@ -1,0 +1,14 @@
+name: Qualys SSL Labs Scan
+
+on:
+  workflow_dispatch:
+  schedule: ## schedule the job to run at 12 am daily
+     - cron: '0 0 * * *'
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Scan website
+      run: |
+        curl -s https://api.ssllabs.com/api/v3/analyze?host=$(echo https://domain) | jq .

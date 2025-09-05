@@ -1,0 +1,31 @@
+name: Docker image secret scan
+
+on:
+  workflow_dispatch:
+  schedule: ## schedule the job to run at 12 am daily
+     - cron: '0 0 * * *'
+
+jobs:
+  docker_secret_scan:
+    runs-on: [self-hosted, build]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run docker secret scan on my image
+        shell: bash
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_HOST: ${{ secrets.ECR_HOST }}
+        run: |
+          aws --region ${AWS_REGION} ecr get-login-password | docker login --username AWS --password-stdin ${ECR_HOST}
+          BUILD=$(deploy/ci/get-build.sh)
+          scan_output=$(docker run --user=0 --rm myaccount.dkr.ecr.us-west-2.amazonaws.com/my_service:${BUILD} bash -c 'find / -type f \( -iname "*.key" -o -iname "*.pem" -o -iname "*.priv" -o -iname "*.crt" -o -iname "*.cer" -o -iname "*.p12" -o -iname "*.pfx" -o -iname "*.jks" -o -iname "*.der" -o -iname "*.csr" \) -exec grep -l "PRIVATE KEY-----$"  {} \;')
+          echo "$scan_output"
+          if [ "$scan_output" = "" ] ; then
+               echo "no private_keys/secrets have been found in my image"
+          else
+               echo "my image has private keys/secrets above need to be removed"
+          fi
+
+        continue-on-error: true
+
+ 
