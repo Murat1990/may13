@@ -7,6 +7,7 @@ permissions:
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   review:
@@ -20,6 +21,15 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 2
 
+      # (Optional) prove there is a diff
+      - name: Show changed files
+        run: |
+          git fetch --no-tags --prune --depth=2 origin +refs/heads/*:refs/remotes/origin/*
+          echo "Base ref: ${{ github.base_ref }}"
+          BASE=$(git merge-base HEAD origin/${{ github.base_ref }})
+          echo "Merge-base: $BASE"
+          git --no-pager diff --name-status $BASE...HEAD
+
       - name: Configure AWS (OIDC → assume role)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -27,9 +37,8 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Claude Code security review
-        uses: anthropics/claude-code-action@main
+        uses: anthropics/claude-code-action@v1
         with:
-          comment-pr: "true"
           use_bedrock: "true"
           prompt: "/security-review"
           # pick your model (must match your IAM allowlist if you scoped it)
