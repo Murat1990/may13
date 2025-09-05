@@ -43,9 +43,15 @@ jobs:
       - name: Claude Code security review
         uses: anthropics/claude-code-action@v1
         env:
-          CLAUDE_CODE_USE_BEDROCK: "1"
+          CLAUDE_CODE_USE_BEDROCK: "1"   # force Bedrock mode
         with:
+          use_bedrock: "true"
           prompt: "/security-review"
-          model: anthropic.claude-sonnet-4-20250514-v1:0
-          max_turns: 6
+          settings: |
+            {
+              "provider": "bedrock",
+              "model": "anthropic.claude-sonnet-4-20250514-v1:0",
+              "max_turns": 6
+            }
           github_token: ${{ github.token }}
+
